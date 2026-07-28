@@ -152,7 +152,8 @@ func GetTicketByID(db *sql.DB, id int64) (*Ticket, error) {
 }
 
 func CreateTicket(db *sql.DB, t *Ticket) error {
-	nowStr := time.Now().Format("2006-01-02 15:04:05")
+	now := time.Now()
+	nowStr := now.Format("2006-01-02 15:04:05")
 
 	// Generate Ticket Key DEV-xxx
 	var lastID int64
@@ -174,6 +175,9 @@ func CreateTicket(db *sql.DB, t *Ticket) error {
 		return err
 	}
 	t.ID = id
+	// Populate timestamps on the struct so callers display the correct time
+	t.CreatedAt = now
+	t.UpdatedAt = now
 	return nil
 }
 
