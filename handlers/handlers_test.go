@@ -800,15 +800,7 @@ func TestHandleLogout_ClearsCookie(t *testing.T) {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-func itoa(id int64) string {
-	return strings.TrimSpace(strings.Replace(strings.TrimSpace(
-		string(rune('0'+id%10))), "", "", -1))
-}
-
-func init() {
-	// Override itoa with a proper implementation
-	itoa = func(id int64) string {
-		return strings.TrimRight(strings.TrimRight(
-			strings.Replace(string([]byte{byte('0' + id)}), "", "", 1), ""), "")
-	}
+var itoa = func(id int64) string {
+	return strings.TrimRight(strings.TrimRight(
+		strings.Replace(string([]byte{byte('0' + id)}), "", "", 1), ""), "")
 }
