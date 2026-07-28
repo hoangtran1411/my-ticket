@@ -1,0 +1,100 @@
+{{define "ticket_table.html"}}
+<div id="board-content" class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl backdrop-blur-md">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900/90 text-slate-400 uppercase font-mono border-b border-slate-800 text-[11px] tracking-wider">
+                <tr>
+                    <th class="px-4 py-3.5">Key</th>
+                    <th class="px-4 py-3.5">Title & Description</th>
+                    <th class="px-4 py-3.5">Type</th>
+                    <th class="px-4 py-3.5">Priority</th>
+                    <th class="px-4 py-3.5">Status</th>
+                    <th class="px-4 py-3.5">Assignee</th>
+                    <th class="px-4 py-3.5">Component</th>
+                    <th class="px-4 py-3.5">Points</th>
+                    <th class="px-4 py-3.5 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/80 font-sans">
+                {{range .Tickets}}
+                <tr class="hover:bg-slate-800/50 transition-colors group cursor-pointer"
+                    hx-get="/tickets/{{.ID}}"
+                    hx-target="#modal-container">
+                    
+                    <td class="px-4 py-3.5 font-mono font-medium text-indigo-400">
+                        {{.TicketKey}}
+                    </td>
+                    <td class="px-4 py-3.5">
+                        <p class="font-semibold text-slate-100 group-hover:text-cyan-300 transition-colors text-sm">
+                            {{.Title}}
+                        </p>
+                        <p class="text-slate-400 text-xs truncate max-w-xs mt-0.5">
+                            {{.Description}}
+                        </p>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                        <span class="flex items-center gap-1.5 font-medium text-slate-300">
+                            <i class="fa-solid {{typeIcon .Type}} text-sm"></i> {{.Type}}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border uppercase tracking-wider {{priorityClass .Priority}}">
+                            {{.Priority}}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap" onclick="event.stopPropagation()">
+                        <select class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1 focus:ring-1 focus:ring-indigo-500 focus:outline-none cursor-pointer"
+                                hx-post="/tickets/{{.ID}}/status"
+                                hx-trigger="change"
+                                name="status">
+                            <option value="Backlog" {{if eq .Status "Backlog"}}selected{{end}}>Backlog</option>
+                            <option value="In Progress" {{if eq .Status "In Progress"}}selected{{end}}>In Progress</option>
+                            <option value="In Review" {{if eq .Status "In Review"}}selected{{end}}>In Review</option>
+                            <option value="Done" {{if eq .Status "Done"}}selected{{end}}>Done</option>
+                        </select>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-bold flex items-center justify-center">
+                                {{if .Assignee}}{{slice .Assignee 0 1}}{{else}}?{{end}}
+                            </div>
+                            <span class="text-slate-300">{{.Assignee}}</span>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3.5 whitespace-nowrap">
+                        <span class="px-2 py-0.5 bg-slate-800 border border-slate-700 text-slate-300 rounded text-[11px]">
+                            {{.Component}}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3.5 font-mono text-slate-400 font-medium whitespace-nowrap">
+                        {{.StoryPoints}} pt
+                    </td>
+                    <td class="px-4 py-3.5 text-right whitespace-nowrap" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-end gap-1">
+                            <button class="p-1.5 hover:bg-slate-700 text-slate-400 hover:text-cyan-300 rounded transition-colors"
+                                    title="Edit"
+                                    hx-get="/tickets/{{.ID}}/edit"
+                                    hx-target="#modal-container">
+                                <i class="fa-solid fa-pen text-xs"></i>
+                            </button>
+                            <button class="p-1.5 hover:bg-rose-950/80 text-slate-400 hover:text-rose-400 rounded transition-colors"
+                                    title="Delete"
+                                    hx-delete="/tickets/{{.ID}}"
+                                    hx-confirm="Are you sure you want to delete {{.TicketKey}}?">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {{else}}
+                <tr>
+                    <td colspan="9" class="text-center py-12 text-slate-500 italic">
+                        No tickets matched your query. Try clearing filters.
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{end}}

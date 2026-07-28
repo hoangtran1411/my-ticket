@@ -1,0 +1,133 @@
+{{define "ticket_form_modal.html"}}
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-opacity animate-fadeIn" id="form-modal">
+    <!-- Click backdrop to close -->
+    <div class="fixed inset-0" onclick="closeModal()"></div>
+
+    <!-- Modal Box -->
+    <div class="relative bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl z-10 overflow-hidden text-slate-200">
+        
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+            <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+                {{if .Ticket}}
+                    <i class="fa-solid fa-pen-to-square text-indigo-400"></i> Edit Ticket <span class="font-mono text-indigo-400">({{.Ticket.TicketKey}})</span>
+                {{else}}
+                    <i class="fa-solid fa-circle-plus text-indigo-400"></i> Create Development Ticket
+                {{end}}
+            </h3>
+            <button class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 flex items-center justify-center transition-colors"
+                    onclick="closeModal()">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Form Body -->
+        <form {{if .Ticket}}hx-post="/tickets/{{.Ticket.ID}}/edit"{{else}}hx-post="/tickets"{{end}}
+              hx-target="#toast-container"
+              hx-swap="innerHTML"
+              class="p-6 overflow-y-auto space-y-4 flex-1 scrollbar-thin">
+
+            {{if not .Ticket}}
+                <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 rounded-xl text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-globe text-cyan-400"></i>
+                    <span><strong>Public Submission:</strong> Anyone can submit bug reports or feature requests anonymously without logging in.</span>
+                </div>
+            {{end}}
+
+            <!-- Title -->
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1.5">Ticket Title *</label>
+                <input type="text" name="title" required value="{{if .Ticket}}{{.Ticket.Title}}{{end}}" placeholder="e.g. Fix memory leak in auth middleware"
+                       class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none placeholder:text-slate-600">
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1.5">Detailed Description</label>
+                <textarea name="description" rows="3" placeholder="Provide background context, steps to reproduce, or acceptance criteria..."
+                          class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none placeholder:text-slate-600 resize-none">{{if .Ticket}}{{.Ticket.Description}}{{end}}</textarea>
+            </div>
+
+            <!-- Grid 2 cols: Type & Priority -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Ticket Type</label>
+                    <select name="type" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                        <option value="Feature" {{if .Ticket}}{{if eq .Ticket.Type "Feature"}}selected{{end}}{{end}}>🚀 Feature</option>
+                        <option value="Bug" {{if .Ticket}}{{if eq .Ticket.Type "Bug"}}selected{{end}}{{end}}>🐛 Bug</option>
+                        <option value="Refactor" {{if .Ticket}}{{if eq .Ticket.Type "Refactor"}}selected{{end}}{{end}}>⚡ Refactor</option>
+                        <option value="Task" {{if .Ticket}}{{if eq .Ticket.Type "Task"}}selected{{end}}{{end}}>📋 Task</option>
+                        <option value="Security" {{if .Ticket}}{{if eq .Ticket.Type "Security"}}selected{{end}}{{end}}>🛡️ Security</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Priority Level</label>
+                    <select name="priority" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                        <option value="Low" {{if .Ticket}}{{if eq .Ticket.Priority "Low"}}selected{{end}}{{end}}>Low</option>
+                        <option value="Medium" {{if .Ticket}}{{if eq .Ticket.Priority "Medium"}}selected{{end}}{{else}}selected{{end}}>Medium</option>
+                        <option value="High" {{if .Ticket}}{{if eq .Ticket.Priority "High"}}selected{{end}}{{end}}>High</option>
+                        <option value="Urgent" {{if .Ticket}}{{if eq .Ticket.Priority "Urgent"}}selected{{end}}{{end}}>🔥 Urgent</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid 2 cols: Status & Component -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Workflow Status</label>
+                    <select name="status" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                        <option value="Backlog" {{if .Ticket}}{{if eq .Ticket.Status "Backlog"}}selected{{end}}{{else}}selected{{end}}>Backlog</option>
+                        <option value="In Progress" {{if .Ticket}}{{if eq .Ticket.Status "In Progress"}}selected{{end}}{{end}}>In Progress</option>
+                        <option value="In Review" {{if .Ticket}}{{if eq .Ticket.Status "In Review"}}selected{{end}}{{end}}>In Review</option>
+                        <option value="Done" {{if .Ticket}}{{if eq .Ticket.Status "Done"}}selected{{end}}{{end}}>Done</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">System Component</label>
+                    <select name="component" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                        <option value="Frontend" {{if .Ticket}}{{if eq .Ticket.Component "Frontend"}}selected{{end}}{{end}}>Frontend</option>
+                        <option value="Backend" {{if .Ticket}}{{if eq .Ticket.Component "Backend"}}selected{{end}}{{else}}selected{{end}}>Backend</option>
+                        <option value="Database" {{if .Ticket}}{{if eq .Ticket.Component "Database"}}selected{{end}}{{end}}>Database</option>
+                        <option value="DevOps" {{if .Ticket}}{{if eq .Ticket.Component "DevOps"}}selected{{end}}{{end}}>DevOps</option>
+                        <option value="UI/UX" {{if .Ticket}}{{if eq .Ticket.Component "UI/UX"}}selected{{end}}{{end}}>UI/UX</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid 3 cols: Assignee, Reporter, Story Points -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Assignee</label>
+                    <input type="text" name="assignee" value="{{if .Ticket}}{{.Ticket.Assignee}}{{else}}Unassigned{{end}}" placeholder="Unassigned"
+                           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Reporter</label>
+                    <input type="text" name="reporter" value="{{if .Ticket}}{{.Ticket.Reporter}}{{else}}Anonymous User{{end}}" placeholder="Anonymous User"
+                           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Story Points</label>
+                    <input type="number" name="story_points" min="1" max="21" value="{{if .Ticket}}{{.Ticket.StoryPoints}}{{else}}3{{end}}"
+                           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+                <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition-all shadow-lg shadow-indigo-600/20">
+                    {{if .Ticket}}Save Changes{{else}}Submit Ticket{{end}}
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{{end}}

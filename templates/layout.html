@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTicket Pro - Development Ticket Manager</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS (via CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    animation: {
+                        'spin-slow': 'spin 8s linear infinite',
+                        'fadeIn': 'fadeIn 0.2s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.98)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- HTMX CDN -->
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white antialiased">
+
+    <!-- Header Navigation -->
+    <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-0.5 shadow-lg shadow-indigo-500/20 flex items-center justify-center">
+                    <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                        <i class="fa-solid fa-ticket-simple text-indigo-400 text-lg"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-base tracking-tight text-slate-100">DevTicket<span class="text-cyan-400">.io</span></span>
+                        <span class="px-2 py-0.5 text-[10px] font-mono font-semibold bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-full">v1.0</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 hidden sm:block">SQLite & Go Powered Agile Kanban Board</p>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center gap-3">
+                <!-- Auth Status & Controls -->
+                {{if .IsAdmin}}
+                    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono">
+                        <i class="fa-solid fa-shield-halved text-[11px]"></i>
+                        <span>Admin (JWT Active)</span>
+                    </div>
+                    <button class="px-3 py-1.5 bg-slate-800 hover:bg-rose-950/80 border border-slate-700 hover:border-rose-500/40 text-slate-300 hover:text-rose-400 font-medium text-xs rounded-xl transition-all"
+                            hx-post="/logout"
+                            title="Log Out Admin">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                    </button>
+                {{else}}
+                    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-800/80 border border-slate-700/60 text-slate-400 text-xs">
+                        <i class="fa-solid fa-globe text-[11px] text-cyan-400"></i>
+                        <span>Public Mode</span>
+                    </div>
+                    <button class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-indigo-400 hover:text-indigo-300 font-medium text-xs rounded-xl transition-all"
+                            hx-get="/login"
+                            hx-target="#modal-container"
+                            title="Admin Login">
+                        <i class="fa-solid fa-key mr-1"></i> Admin Login
+                    </button>
+                {{end}}
+
+                <!-- Refresh Button -->
+                <button class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 flex items-center justify-center transition-all"
+                        title="Refresh Board"
+                        onclick="document.body.dispatchEvent(new Event('refresh-board')); document.body.dispatchEvent(new Event('refresh-stats'));">
+                    <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                </button>
+
+                <!-- Anonymous / Public Create Ticket Button -->
+                <button class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-500/20 flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        hx-get="/tickets/new"
+                        hx-target="#modal-container">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>+ New Ticket</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Page Content -->
+    <div class="flex-1">
+        {{template "index.html" .}}
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-900/40 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>© 2026 DevTicket Pro. Go 1.26 + SQLite + HTMX + Tailwind CSS.</p>
+            <div class="flex items-center gap-4 text-slate-400">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-database text-cyan-400 text-[10px]"></i> SQLite WAL</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-amber-400 text-[10px]"></i> HTMX Reactive</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Dynamic Modal Container -->
+    <div id="modal-container"></div>
+
+    <!-- Dynamic Toast Notification Container -->
+    <div id="toast-container">
+        {{if .Toast}}{{.Toast}}{{end}}
+    </div>
+
+    <!-- Client Script Helpers -->
+    <script>
+        function closeModal() {
+            const modal = document.getElementById('detail-modal') || document.getElementById('form-modal');
+            if (modal) {
+                modal.classList.add('opacity-0');
+                setTimeout(() => modal.remove(), 150);
+            }
+        }
+
+        document.body.addEventListener('close-modal', function() {
+            closeModal();
+        });
+
+        function setViewMode(mode) {
+            document.getElementById('filter-view-mode').value = mode;
+            
+            // Update button styles
+            const btnKanban = document.getElementById('btn-view-kanban');
+            const btnTable = document.getElementById('btn-view-table');
+
+            if (mode === 'kanban') {
+                btnKanban.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm";
+                btnTable.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+            } else {
+                btnTable.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm";
+                btnKanban.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+            }
+
+            // Trigger HTMX search fetch
+            document.getElementById('search-input').dispatchEvent(new Event('change'));
+        }
+
+        function handleKanbanDrop(event, targetStatus) {
+            event.preventDefault();
+            const ticketID = event.dataTransfer.getData('text/plain');
+            if (!ticketID) return;
+
+            // Make HTMX POST request to change ticket status
+            htmx.ajax('POST', '/tickets/' + ticketID + '/status', {
+                target: '#board-wrapper',
+                swap: 'none',
+                values: { status: targetStatus }
+            });
+        }
+    </script>
+</body>
+</html>

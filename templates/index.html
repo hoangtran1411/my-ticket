@@ -1,0 +1,105 @@
+{{define "index.html"}}
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    
+    <!-- Stats Cards Summary -->
+    <div id="stats-cards-wrapper" hx-get="/tickets/stats" hx-trigger="refresh-stats from:body" hx-swap="innerHTML">
+        {{template "stats_cards.html" .Stats}}
+    </div>
+
+    <!-- Filter & Toolbar Control Bar -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-xl backdrop-blur-md flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+        
+        <!-- Live Search Form -->
+        <form hx-get="/tickets" 
+              hx-target="#board-content" 
+              hx-swap="outerHTML" 
+              hx-trigger="keyup changed delay:250ms from:#search-input, change from:select"
+              class="flex flex-1 flex-wrap items-center gap-3">
+            
+            <input type="hidden" name="view" id="filter-view-mode" value="{{.Filter.ViewMode}}">
+
+            <!-- Search Input -->
+            <div class="relative flex-1 min-w-[220px]">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                <input type="text" 
+                       id="search-input"
+                       name="q" 
+                       value="{{.Filter.Query}}"
+                       placeholder="Search title, key, assignee..." 
+                       class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 focus:ring-1 focus:ring-indigo-500 focus:outline-none placeholder:text-slate-600 transition-all">
+            </div>
+
+            <!-- Status Filter -->
+            <select name="status" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none cursor-pointer">
+                <option value="All">All Statuses</option>
+                <option value="Backlog" {{if eq .Filter.Status "Backlog"}}selected{{end}}>Backlog</option>
+                <option value="In Progress" {{if eq .Filter.Status "In Progress"}}selected{{end}}>In Progress</option>
+                <option value="In Review" {{if eq .Filter.Status "In Review"}}selected{{end}}>In Review</option>
+                <option value="Done" {{if eq .Filter.Status "Done"}}selected{{end}}>Done</option>
+            </select>
+
+            <!-- Priority Filter -->
+            <select name="priority" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none cursor-pointer">
+                <option value="All">All Priorities</option>
+                <option value="Urgent" {{if eq .Filter.Priority "Urgent"}}selected{{end}}>🔥 Urgent</option>
+                <option value="High" {{if eq .Filter.Priority "High"}}selected{{end}}>High</option>
+                <option value="Medium" {{if eq .Filter.Priority "Medium"}}selected{{end}}>Medium</option>
+                <option value="Low" {{if eq .Filter.Priority "Low"}}selected{{end}}>Low</option>
+            </select>
+
+            <!-- Type Filter -->
+            <select name="type" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none cursor-pointer">
+                <option value="All">All Types</option>
+                <option value="Feature" {{if eq .Filter.Type "Feature"}}selected{{end}}>Feature</option>
+                <option value="Bug" {{if eq .Filter.Type "Bug"}}selected{{end}}>Bug</option>
+                <option value="Refactor" {{if eq .Filter.Type "Refactor"}}selected{{end}}>Refactor</option>
+                <option value="Task" {{if eq .Filter.Type "Task"}}selected{{end}}>Task</option>
+                <option value="Security" {{if eq .Filter.Type "Security"}}selected{{end}}>Security</option>
+            </select>
+
+            <!-- Component Filter -->
+            <select name="component" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none cursor-pointer">
+                <option value="All">All Components</option>
+                <option value="Frontend" {{if eq .Filter.Component "Frontend"}}selected{{end}}>Frontend</option>
+                <option value="Backend" {{if eq .Filter.Component "Backend"}}selected{{end}}>Backend</option>
+                <option value="Database" {{if eq .Filter.Component "Database"}}selected{{end}}>Database</option>
+                <option value="DevOps" {{if eq .Filter.Component "DevOps"}}selected{{end}}>DevOps</option>
+                <option value="UI/UX" {{if eq .Filter.Component "UI/UX"}}selected{{end}}>UI/UX</option>
+            </select>
+        </form>
+
+        <!-- View Switcher Toggle -->
+        <div class="flex items-center bg-slate-950 border border-slate-800 p-1 rounded-xl shrink-0">
+            <button type="button"
+                    onclick="setViewMode('kanban')"
+                    id="btn-view-kanban"
+                    class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 {{if eq .Filter.ViewMode "kanban"}}bg-indigo-600 text-white shadow-sm{{else}}text-slate-400 hover:text-slate-200{{end}}">
+                <i class="fa-solid fa-border-all"></i> Board
+            </button>
+            <button type="button"
+                    onclick="setViewMode('table')"
+                    id="btn-view-table"
+                    class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 {{if eq .Filter.ViewMode "table"}}bg-indigo-600 text-white shadow-sm{{else}}text-slate-400 hover:text-slate-200{{end}}">
+                <i class="fa-solid fa-list-ul"></i> Table
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Ticket Board Container (Dynamic updates via HTMX) -->
+    <div id="board-wrapper" 
+         hx-get="/tickets" 
+         hx-trigger="refresh-board from:body" 
+         hx-include="#search-input, [name='status'], [name='priority'], [name='type'], [name='component'], #filter-view-mode"
+         hx-target="#board-content" 
+         hx-swap="outerHTML">
+        
+        {{if eq .Filter.ViewMode "table"}}
+            {{template "ticket_table.html" .}}
+        {{else}}
+            {{template "kanban_board.html" .}}
+        {{end}}
+    </div>
+
+</main>
+{{end}}

@@ -1,0 +1,24 @@
+{{define "comment_list.html"}}
+<div id="comment-list" class="space-y-3">
+    {{if .}}
+        {{range .}}
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-1.5">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+                <div class="flex items-center gap-2 font-medium text-slate-200">
+                    <div class="w-6 h-6 rounded-full bg-indigo-600/30 text-indigo-300 text-[10px] font-bold flex items-center justify-center border border-indigo-500/30 uppercase">
+                        {{slice .Author 0 1}}
+                    </div>
+                    <span>{{.Author}}</span>
+                </div>
+                <span class="text-slate-500 text-[11px]"><i class="fa-regular fa-clock mr-1"></i>{{.FormattedTime}}</span>
+            </div>
+            <p class="text-xs text-slate-300 pl-8 leading-relaxed">{{.Content}}</p>
+        </div>
+        {{end}}
+    {{else}}
+        <div class="text-center py-6 text-slate-500 text-xs italic bg-slate-900/40 rounded-xl border border-dashed border-slate-800">
+            No comments yet. Start the conversation!
+        </div>
+    {{end}}
+</div>
+{{end}}

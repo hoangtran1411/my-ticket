@@ -1,0 +1,113 @@
+{{define "kanban_board.html"}}
+<div id="board-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+    
+    <!-- Column: Backlog -->
+    <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 flex flex-col min-h-[500px]"
+         ondragover="event.preventDefault(); this.classList.add('border-indigo-500/50', 'bg-slate-900/80');"
+         ondragleave="this.classList.remove('border-indigo-500/50', 'bg-slate-900/80');"
+         ondrop="handleKanbanDrop(event, 'Backlog')">
+        
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+                <h3 class="font-semibold text-slate-200 text-sm tracking-wide">Backlog</h3>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-slate-800 text-slate-400 border border-slate-700">
+                {{len (index .KanbanCols "Backlog")}}
+            </span>
+        </div>
+
+        <div class="space-y-3 flex-1 overflow-y-auto max-h-[70vh] pr-1 scrollbar-thin">
+            {{range index .KanbanCols "Backlog"}}
+                {{template "ticket_card.html" .}}
+            {{else}}
+                <div class="text-center py-10 text-slate-600 text-xs italic border border-dashed border-slate-800/80 rounded-xl">
+                    No backlog items
+                </div>
+            {{end}}
+        </div>
+    </div>
+
+    <!-- Column: In Progress -->
+    <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 flex flex-col min-h-[500px]"
+         ondragover="event.preventDefault(); this.classList.add('border-amber-500/50', 'bg-slate-900/80');"
+         ondragleave="this.classList.remove('border-amber-500/50', 'bg-slate-900/80');"
+         ondrop="handleKanbanDrop(event, 'In Progress')">
+        
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                <h3 class="font-semibold text-slate-200 text-sm tracking-wide">In Progress</h3>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                {{len (index .KanbanCols "In Progress")}}
+            </span>
+        </div>
+
+        <div class="space-y-3 flex-1 overflow-y-auto max-h-[70vh] pr-1 scrollbar-thin">
+            {{range index .KanbanCols "In Progress"}}
+                {{template "ticket_card.html" .}}
+            {{else}}
+                <div class="text-center py-10 text-slate-600 text-xs italic border border-dashed border-slate-800/80 rounded-xl">
+                    No tasks in progress
+                </div>
+            {{end}}
+        </div>
+    </div>
+
+    <!-- Column: In Review -->
+    <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 flex flex-col min-h-[500px]"
+         ondragover="event.preventDefault(); this.classList.add('border-indigo-500/50', 'bg-slate-900/80');"
+         ondragleave="this.classList.remove('border-indigo-500/50', 'bg-slate-900/80');"
+         ondrop="handleKanbanDrop(event, 'In Review')">
+        
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
+                <h3 class="font-semibold text-slate-200 text-sm tracking-wide">In Review</h3>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">
+                {{len (index .KanbanCols "In Review")}}
+            </span>
+        </div>
+
+        <div class="space-y-3 flex-1 overflow-y-auto max-h-[70vh] pr-1 scrollbar-thin">
+            {{range index .KanbanCols "In Review"}}
+                {{template "ticket_card.html" .}}
+            {{else}}
+                <div class="text-center py-10 text-slate-600 text-xs italic border border-dashed border-slate-800/80 rounded-xl">
+                    No code under review
+                </div>
+            {{end}}
+        </div>
+    </div>
+
+    <!-- Column: Done -->
+    <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 flex flex-col min-h-[500px]"
+         ondragover="event.preventDefault(); this.classList.add('border-emerald-500/50', 'bg-slate-900/80');"
+         ondragleave="this.classList.remove('border-emerald-500/50', 'bg-slate-900/80');"
+         ondrop="handleKanbanDrop(event, 'Done')">
+        
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                <h3 class="font-semibold text-slate-200 text-sm tracking-wide">Done</h3>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                {{len (index .KanbanCols "Done")}}
+            </span>
+        </div>
+
+        <div class="space-y-3 flex-1 overflow-y-auto max-h-[70vh] pr-1 scrollbar-thin">
+            {{range index .KanbanCols "Done"}}
+                {{template "ticket_card.html" .}}
+            {{else}}
+                <div class="text-center py-10 text-slate-600 text-xs italic border border-dashed border-slate-800/80 rounded-xl">
+                    No completed tickets
+                </div>
+            {{end}}
+        </div>
+    </div>
+
+</div>
+{{end}}

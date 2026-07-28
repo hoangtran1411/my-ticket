@@ -1,0 +1,75 @@
+{{define "ticket_card.html"}}
+<div id="ticket-card-{{.ID}}" 
+     class="group bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800/90 hover:border-indigo-500/40 rounded-xl p-4 shadow-lg hover:shadow-indigo-500/5 transition-all duration-200 cursor-pointer flex flex-col gap-3 relative"
+     draggable="true" 
+     ondragstart="event.dataTransfer.setData('text/plain', '{{.ID}}')">
+    
+    <!-- Top Metadata Header -->
+    <div class="flex items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-1.5 font-mono text-[11px] font-semibold text-indigo-400 bg-indigo-950/60 border border-indigo-800/50 px-2 py-0.5 rounded-md">
+            <i class="fa-solid {{typeIcon .Type}}"></i>
+            <span>{{.TicketKey}}</span>
+        </div>
+
+        <div class="flex items-center gap-1">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border uppercase tracking-wider {{priorityClass .Priority}}">
+                {{.Priority}}
+            </span>
+        </div>
+    </div>
+
+    <!-- Title -->
+    <div>
+        <h4 class="font-semibold text-slate-100 text-sm leading-snug group-hover:text-cyan-300 transition-colors"
+            hx-get="/tickets/{{.ID}}"
+            hx-target="#modal-container">
+            {{.Title}}
+        </h4>
+        <p class="text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2"
+           hx-get="/tickets/{{.ID}}"
+           hx-target="#modal-container">
+            {{.ShortDescription}}
+        </p>
+    </div>
+
+    <!-- Bottom Footer Meta -->
+    <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+        <!-- Component & Points -->
+        <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 bg-slate-800 border border-slate-700 text-slate-300 rounded text-[11px]">
+                {{.Component}}
+            </span>
+            <span class="flex items-center gap-1 text-[11px] font-medium text-slate-400 bg-slate-800/50 border border-slate-700/60 px-1.5 py-0.5 rounded">
+                <i class="fa-solid fa-cube text-slate-500 text-[10px]"></i> {{.StoryPoints}}pt
+            </span>
+        </div>
+
+        <!-- Assignee Avatar & Actions -->
+        <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-bold flex items-center justify-center title='{{.Assignee}}'">
+                {{if .Assignee}}
+                    {{slice .Assignee 0 1}}
+                {{else}}
+                    ?
+                {{end}}
+            </div>
+
+            <!-- Card Actions Dropdown or Buttons -->
+            <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1" onclick="event.stopPropagation()">
+                <button class="w-6 h-6 rounded hover:bg-slate-700 text-slate-400 hover:text-cyan-300 flex items-center justify-center transition-colors"
+                        title="Edit Ticket"
+                        hx-get="/tickets/{{.ID}}/edit"
+                        hx-target="#modal-container">
+                    <i class="fa-solid fa-pen text-[11px]"></i>
+                </button>
+                <button class="w-6 h-6 rounded hover:bg-rose-950/80 text-slate-400 hover:text-rose-400 flex items-center justify-center transition-colors"
+                        title="Delete Ticket"
+                        hx-delete="/tickets/{{.ID}}"
+                        hx-confirm="Are you sure you want to delete {{.TicketKey}}?">
+                    <i class="fa-solid fa-trash-can text-[11px]"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}
