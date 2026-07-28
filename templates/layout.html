@@ -166,23 +166,25 @@
             }
         });
 
+        const ACTIVE_BTN   = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-600/30";
+        const INACTIVE_BTN = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+
         function setViewMode(mode) {
             document.getElementById('filter-view-mode').value = mode;
-            
-            // Update button styles
-            const btnKanban = document.getElementById('btn-view-kanban');
-            const btnTable = document.getElementById('btn-view-table');
 
+            // Update button styles to match the glassmorphic theme
+            const btnKanban = document.getElementById('btn-view-kanban');
+            const btnTable  = document.getElementById('btn-view-table');
             if (mode === 'kanban') {
-                btnKanban.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm";
-                btnTable.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+                btnKanban.className = ACTIVE_BTN;
+                btnTable.className  = INACTIVE_BTN;
             } else {
-                btnTable.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm";
-                btnKanban.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+                btnTable.className  = ACTIVE_BTN;
+                btnKanban.className = INACTIVE_BTN;
             }
 
-            // Trigger HTMX search fetch
-            document.getElementById('search-input').dispatchEvent(new Event('change'));
+            // Dispatch a custom event so the board-wrapper HTMX listener refreshes the board
+            document.body.dispatchEvent(new CustomEvent('view-change'));
         }
 
         function handleKanbanDrop(event, targetStatus) {

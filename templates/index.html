@@ -89,7 +89,7 @@
     <!-- Ticket Board Container (Dynamic updates via HTMX) -->
     <div id="board-wrapper" 
          hx-get="/tickets" 
-         hx-trigger="refresh-board from:body" 
+         hx-trigger="refresh-board from:body, view-change from:body" 
          hx-include="#search-input, [name='status'], [name='priority'], [name='type'], [name='component'], #filter-view-mode"
          hx-target="#board-content" 
          hx-swap="outerHTML">
