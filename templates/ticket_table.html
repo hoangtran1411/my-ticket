@@ -1,8 +1,8 @@
 {{define "ticket_table.html"}}
-<div id="board-content" class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl backdrop-blur-md">
-    <div class="overflow-x-auto">
+<div id="board-content" class="glass-panel rounded-2xl overflow-hidden shadow-2xl">
+    <div class="overflow-x-auto scrollbar-thin">
         <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-slate-900/90 text-slate-400 uppercase font-mono border-b border-slate-800 text-[11px] tracking-wider">
+            <thead class="bg-[#120d2a]/80 text-violet-300 uppercase font-mono border-b border-violet-500/20 text-[11px] tracking-wider">
                 <tr>
                     <th class="px-4 py-3.5">Key</th>
                     <th class="px-4 py-3.5">Title & Description</th>
@@ -15,13 +15,13 @@
                     <th class="px-4 py-3.5 text-right">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/80 font-sans">
+            <tbody class="divide-y divide-violet-500/15 font-sans">
                 {{range .Tickets}}
-                <tr class="hover:bg-slate-800/50 transition-colors group cursor-pointer"
+                <tr class="hover:bg-violet-950/40 transition-colors group cursor-pointer"
                     hx-get="/tickets/{{.ID}}"
                     hx-target="#modal-container">
                     
-                    <td class="px-4 py-3.5 font-mono font-medium text-indigo-400">
+                    <td class="px-4 py-3.5 font-mono font-bold text-cyan-300">
                         {{.TicketKey}}
                     </td>
                     <td class="px-4 py-3.5">
@@ -34,16 +34,16 @@
                     </td>
                     <td class="px-4 py-3.5 whitespace-nowrap">
                         <span class="flex items-center gap-1.5 font-medium text-slate-300">
-                            <i class="fa-solid {{typeIcon .Type}} text-sm"></i> {{.Type}}
+                            <i class="fa-solid {{typeIcon .Type}} text-cyan-400 text-sm"></i> {{.Type}}
                         </span>
                     </td>
                     <td class="px-4 py-3.5 whitespace-nowrap">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border uppercase tracking-wider {{priorityClass .Priority}}">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider shadow-sm {{priorityClass .Priority}}">
                             {{.Priority}}
                         </span>
                     </td>
                     <td class="px-4 py-3.5 whitespace-nowrap" onclick="event.stopPropagation()">
-                        <select class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1 focus:ring-1 focus:ring-indigo-500 focus:outline-none cursor-pointer"
+                        <select class="glass-input text-slate-200 text-xs rounded-lg px-2.5 py-1 cursor-pointer bg-[#0e0a22]"
                                 hx-post="/tickets/{{.ID}}/status"
                                 hx-trigger="change"
                                 name="status">
@@ -55,31 +55,35 @@
                     </td>
                     <td class="px-4 py-3.5 whitespace-nowrap">
                         <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-bold flex items-center justify-center">
-                                {{if .Assignee}}{{slice .Assignee 0 1}}{{else}}?{{end}}
+                            <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-violet-600 to-cyan-500 p-0.5 shadow-md shadow-violet-500/20">
+                                <div class="w-full h-full bg-[#0d091e] rounded-full text-cyan-300 text-[10px] font-bold flex items-center justify-center">
+                                    {{if .Assignee}}{{slice .Assignee 0 1}}{{else}}?{{end}}
+                                </div>
                             </div>
-                            <span class="text-slate-300">{{.Assignee}}</span>
+                            <span class="text-slate-300 font-medium">{{.Assignee}}</span>
                         </div>
                     </td>
                     <td class="px-4 py-3.5 whitespace-nowrap">
-                        <span class="px-2 py-0.5 bg-slate-800 border border-slate-700 text-slate-300 rounded text-[11px]">
+                        <span class="px-2 py-0.5 bg-violet-950/60 border border-violet-700/40 text-violet-200 rounded-md text-[11px] font-medium shadow-inner">
                             {{.Component}}
                         </span>
                     </td>
-                    <td class="px-4 py-3.5 font-mono text-slate-400 font-medium whitespace-nowrap">
+                    <td class="px-4 py-3.5 font-mono text-cyan-400 font-bold whitespace-nowrap">
                         {{.StoryPoints}} pt
                     </td>
                     <td class="px-4 py-3.5 text-right whitespace-nowrap" onclick="event.stopPropagation()">
                         <div class="flex items-center justify-end gap-1">
-                            <button class="p-1.5 hover:bg-slate-700 text-slate-400 hover:text-cyan-300 rounded transition-colors"
+                            <button class="p-1.5 hover:bg-violet-800/50 text-slate-400 hover:text-cyan-300 rounded-lg transition-colors border border-transparent hover:border-violet-500/30"
                                     title="Edit"
                                     hx-get="/tickets/{{.ID}}/edit"
                                     hx-target="#modal-container">
                                 <i class="fa-solid fa-pen text-xs"></i>
                             </button>
-                            <button class="p-1.5 hover:bg-rose-950/80 text-slate-400 hover:text-rose-400 rounded transition-colors"
+                            <button class="p-1.5 hover:bg-rose-950/80 text-slate-400 hover:text-rose-400 rounded-lg transition-colors border border-transparent hover:border-rose-500/40"
                                     title="Delete"
                                     hx-delete="/tickets/{{.ID}}"
+                                    hx-target="#toast-container"
+                                    hx-swap="innerHTML"
                                     hx-confirm="Are you sure you want to delete {{.TicketKey}}?">
                                 <i class="fa-solid fa-trash-can text-xs"></i>
                             </button>

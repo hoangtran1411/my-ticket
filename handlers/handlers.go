@@ -65,13 +65,15 @@ func (h *Handler) RequireAdmin(next http.HandlerFunc) http.HandlerFunc {
 			w.Header().Set("HX-Trigger", "unauthorized")
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte(`
-				<div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-rose-950/90 border border-rose-500/50 text-rose-300 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md transition-all animate-bounce" id="toast">
+				<div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#1e0a16]/95 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-2xl shadow-2xl backdrop-blur-xl transition-all animate-fadeIn" id="toast">
 					<i class="fa-solid fa-lock text-rose-400 text-lg"></i>
 					<div>
-						<p class="font-medium text-sm">Access Denied (401)</p>
-						<p class="text-xs text-rose-400/80">Admin permission required via JWT token. Please login as Admin.</p>
+						<p class="font-bold text-sm text-slate-100">Access Denied (401)</p>
+						<p class="text-xs text-rose-300/80">Admin permission required. Please login as Admin.</p>
 					</div>
+					<button onclick="this.parentElement.remove()" class="ml-2 text-slate-400 hover:text-slate-200"><i class="fa-solid fa-xmark"></i></button>
 				</div>
+				<script>setTimeout(() => { const t = document.getElementById('toast'); if(t) t.remove(); }, 4000);</script>
 			`))
 			return
 		}
@@ -424,13 +426,15 @@ func (h *Handler) HandleDeleteTicket(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Trigger", "refresh-board, refresh-stats, close-modal")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`
-		<div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-rose-950/90 border border-rose-500/50 text-rose-300 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md transition-all" id="toast">
+		<div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#1e0a16]/95 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-2xl shadow-2xl backdrop-blur-xl transition-all animate-fadeIn" id="toast">
 			<i class="fa-solid fa-trash-can text-rose-400 text-lg"></i>
 			<div>
-				<p class="font-medium text-sm">Ticket Deleted (Admin)</p>
-				<p class="text-xs text-rose-400/80">Ticket #` + idStr + ` has been deleted.</p>
+				<p class="font-bold text-sm text-slate-100">Ticket Deleted (Admin)</p>
+				<p class="text-xs text-rose-300/80">Ticket #` + idStr + ` has been removed from database.</p>
 			</div>
+			<button onclick="this.parentElement.remove()" class="ml-2 text-slate-400 hover:text-slate-200"><i class="fa-solid fa-xmark"></i></button>
 		</div>
+		<script>setTimeout(() => { const t = document.getElementById('toast'); if(t) t.remove(); }, 3500);</script>
 	`))
 }
 

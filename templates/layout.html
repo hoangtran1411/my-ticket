@@ -45,25 +45,32 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white antialiased">
+<body class="bg-[#090714] text-slate-100 font-sans min-h-screen flex flex-col selection:bg-violet-500 selection:text-white antialiased relative overflow-x-hidden">
+
+    <!-- Ambient Cosmic Glowing Background Orbs -->
+    <div class="bg-cosmic-glow">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
 
     <!-- Header Navigation -->
-    <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl sticky top-0 z-40">
+    <header class="sticky top-0 z-40 bg-[#120d2c]/65 backdrop-blur-2xl border-b border-violet-500/20 shadow-lg shadow-violet-950/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
             
             <!-- Brand Logo -->
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-0.5 shadow-lg shadow-indigo-500/20 flex items-center justify-center">
-                    <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                        <i class="fa-solid fa-ticket-simple text-indigo-400 text-lg"></i>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-cyan-400 p-0.5 shadow-lg shadow-violet-500/30 flex items-center justify-center">
+                    <div class="w-full h-full bg-[#0d0a1d] rounded-[10px] flex items-center justify-center">
+                        <i class="fa-solid fa-ticket-simple text-cyan-400 text-lg"></i>
                     </div>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="font-bold text-base tracking-tight text-slate-100">DevTicket<span class="text-cyan-400">.io</span></span>
-                        <span class="px-2 py-0.5 text-[10px] font-mono font-semibold bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-full">v1.0</span>
+                        <span class="font-bold text-base tracking-tight bg-gradient-to-r from-white via-slate-100 to-cyan-300 bg-clip-text text-transparent">DevTicket<span class="text-cyan-400">.io</span></span>
+                        <span class="px-2 py-0.5 text-[10px] font-mono font-semibold bg-violet-500/15 border border-violet-500/30 text-violet-300 rounded-full shadow-inner">v2.0 Glass</span>
                     </div>
-                    <p class="text-[11px] text-slate-400 hidden sm:block">SQLite & Go Powered Agile Kanban Board</p>
+                    <p class="text-[11px] text-slate-400 hidden sm:block">SQLite & Go Powered Deep Universe Kanban</p>
                 </div>
             </div>
 
@@ -71,21 +78,21 @@
             <div class="flex items-center gap-3">
                 <!-- Auth Status & Controls -->
                 {{if .IsAdmin}}
-                    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono">
-                        <i class="fa-solid fa-shield-halved text-[11px]"></i>
+                    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-mono shadow-sm">
+                        <i class="fa-solid fa-shield-halved text-[11px] text-emerald-400"></i>
                         <span>Admin (JWT Active)</span>
                     </div>
-                    <button class="px-3 py-1.5 bg-slate-800 hover:bg-rose-950/80 border border-slate-700 hover:border-rose-500/40 text-slate-300 hover:text-rose-400 font-medium text-xs rounded-xl transition-all"
+                    <button class="px-3 py-1.5 bg-violet-950/50 hover:bg-rose-950/80 border border-violet-800/40 hover:border-rose-500/50 text-slate-300 hover:text-rose-300 font-medium text-xs rounded-xl transition-all shadow-md"
                             hx-post="/logout"
                             title="Log Out Admin">
                         <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
                     </button>
                 {{else}}
-                    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-800/80 border border-slate-700/60 text-slate-400 text-xs">
+                    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-violet-900/30 border border-violet-700/40 text-slate-300 text-xs shadow-sm">
                         <i class="fa-solid fa-globe text-[11px] text-cyan-400"></i>
                         <span>Public Mode</span>
                     </div>
-                    <button class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-indigo-400 hover:text-indigo-300 font-medium text-xs rounded-xl transition-all"
+                    <button class="px-3 py-1.5 bg-violet-950/60 hover:bg-violet-900/80 border border-violet-700/50 text-cyan-300 hover:text-cyan-200 font-medium text-xs rounded-xl transition-all shadow-md"
                             hx-get="/login"
                             hx-target="#modal-container"
                             title="Admin Login">
@@ -94,14 +101,14 @@
                 {{end}}
 
                 <!-- Refresh Button -->
-                <button class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 flex items-center justify-center transition-all"
+                <button class="w-9 h-9 rounded-xl bg-violet-950/50 border border-violet-700/40 hover:border-cyan-400/50 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition-all shadow-md"
                         title="Refresh Board"
                         onclick="document.body.dispatchEvent(new Event('refresh-board')); document.body.dispatchEvent(new Event('refresh-stats'));">
                     <i class="fa-solid fa-arrows-rotate text-xs"></i>
                 </button>
 
                 <!-- Anonymous / Public Create Ticket Button -->
-                <button class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-500/20 flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                <button class="px-4 py-2 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white font-semibold text-xs rounded-xl shadow-lg shadow-violet-600/30 flex items-center gap-2 transition-all hover:scale-[1.03] active:scale-[0.97]"
                         hx-get="/tickets/new"
                         hx-target="#modal-container">
                     <i class="fa-solid fa-plus text-xs"></i>
@@ -112,17 +119,17 @@
     </header>
 
     <!-- Main Page Content -->
-    <div class="flex-1">
+    <div class="flex-1 relative z-10">
         {{template "index.html" .}}
     </div>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-800/80 bg-slate-900/40 py-6 text-center text-xs text-slate-500">
+    <footer class="border-t border-violet-500/15 bg-[#0e0a22]/70 backdrop-blur-lg py-6 text-center text-xs text-slate-400 relative z-10">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>© 2026 DevTicket Pro. Go 1.26 + SQLite + HTMX + Tailwind CSS.</p>
+            <p>© 2026 DevTicket Pro • Glassmorphic Deep Universe Edition</p>
             <div class="flex items-center gap-4 text-slate-400">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-database text-cyan-400 text-[10px]"></i> SQLite WAL</span>
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-amber-400 text-[10px]"></i> HTMX Reactive</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-fuchsia-400 text-[10px]"></i> HTMX Reactive</span>
             </div>
         </div>
     </footer>
@@ -147,6 +154,16 @@
 
         document.body.addEventListener('close-modal', function() {
             closeModal();
+        });
+
+        // Handle HTMX 401 Unauthorized errors to display toast notification
+        document.body.addEventListener('htmx:responseError', function(evt) {
+            if (evt.detail.xhr && evt.detail.xhr.status === 401) {
+                const toastContainer = document.getElementById('toast-container');
+                if (toastContainer && evt.detail.xhr.responseText) {
+                    toastContainer.innerHTML = evt.detail.xhr.responseText;
+                }
+            }
         });
 
         function setViewMode(mode) {

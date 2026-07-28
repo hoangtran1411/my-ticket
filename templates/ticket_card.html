@@ -1,18 +1,18 @@
 {{define "ticket_card.html"}}
 <div id="ticket-card-{{.ID}}" 
-     class="group bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800/90 hover:border-indigo-500/40 rounded-xl p-4 shadow-lg hover:shadow-indigo-500/5 transition-all duration-200 cursor-pointer flex flex-col gap-3 relative"
+     class="group glass-card rounded-xl p-4 cursor-pointer flex flex-col gap-3 relative"
      draggable="true" 
      ondragstart="event.dataTransfer.setData('text/plain', '{{.ID}}')">
     
     <!-- Top Metadata Header -->
     <div class="flex items-center justify-between gap-2 text-xs">
-        <div class="flex items-center gap-1.5 font-mono text-[11px] font-semibold text-indigo-400 bg-indigo-950/60 border border-indigo-800/50 px-2 py-0.5 rounded-md">
-            <i class="fa-solid {{typeIcon .Type}}"></i>
+        <div class="flex items-center gap-1.5 font-mono text-[11px] font-bold text-cyan-300 bg-cyan-950/50 border border-cyan-500/30 px-2 py-0.5 rounded-md shadow-sm">
+            <i class="fa-solid {{typeIcon .Type}} text-cyan-400"></i>
             <span>{{.TicketKey}}</span>
         </div>
 
         <div class="flex items-center gap-1">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border uppercase tracking-wider {{priorityClass .Priority}}">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider shadow-sm {{priorityClass .Priority}}">
                 {{.Priority}}
             </span>
         </div>
@@ -33,38 +33,42 @@
     </div>
 
     <!-- Bottom Footer Meta -->
-    <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+    <div class="pt-2 border-t border-violet-500/15 flex items-center justify-between text-xs text-slate-400">
         <!-- Component & Points -->
         <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 bg-slate-800 border border-slate-700 text-slate-300 rounded text-[11px]">
+            <span class="px-2 py-0.5 bg-violet-950/60 border border-violet-700/40 text-violet-200 rounded-md text-[11px] font-medium shadow-inner">
                 {{.Component}}
             </span>
-            <span class="flex items-center gap-1 text-[11px] font-medium text-slate-400 bg-slate-800/50 border border-slate-700/60 px-1.5 py-0.5 rounded">
-                <i class="fa-solid fa-cube text-slate-500 text-[10px]"></i> {{.StoryPoints}}pt
+            <span class="flex items-center gap-1 text-[11px] font-medium text-slate-300 bg-violet-950/40 border border-violet-700/30 px-1.5 py-0.5 rounded-md">
+                <i class="fa-solid fa-cube text-cyan-400 text-[10px]"></i> {{.StoryPoints}}pt
             </span>
         </div>
 
         <!-- Assignee Avatar & Actions -->
         <div class="flex items-center gap-2">
-            <div class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-bold flex items-center justify-center title='{{.Assignee}}'">
-                {{if .Assignee}}
-                    {{slice .Assignee 0 1}}
-                {{else}}
-                    ?
-                {{end}}
+            <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-violet-600 to-cyan-500 p-0.5 shadow-md shadow-violet-500/20" title='{{.Assignee}}'>
+                <div class="w-full h-full bg-[#0d091e] rounded-full text-cyan-300 text-[10px] font-bold flex items-center justify-center">
+                    {{if .Assignee}}
+                        {{slice .Assignee 0 1}}
+                    {{else}}
+                        ?
+                    {{end}}
+                </div>
             </div>
 
             <!-- Card Actions Dropdown or Buttons -->
             <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1" onclick="event.stopPropagation()">
-                <button class="w-6 h-6 rounded hover:bg-slate-700 text-slate-400 hover:text-cyan-300 flex items-center justify-center transition-colors"
+                <button class="w-6 h-6 rounded-md hover:bg-violet-800/50 text-slate-400 hover:text-cyan-300 flex items-center justify-center transition-colors border border-transparent hover:border-violet-500/30"
                         title="Edit Ticket"
                         hx-get="/tickets/{{.ID}}/edit"
                         hx-target="#modal-container">
                     <i class="fa-solid fa-pen text-[11px]"></i>
                 </button>
-                <button class="w-6 h-6 rounded hover:bg-rose-950/80 text-slate-400 hover:text-rose-400 flex items-center justify-center transition-colors"
+                <button class="w-6 h-6 rounded-md hover:bg-rose-950/80 text-slate-400 hover:text-rose-400 flex items-center justify-center transition-colors border border-transparent hover:border-rose-500/40"
                         title="Delete Ticket"
                         hx-delete="/tickets/{{.ID}}"
+                        hx-target="#toast-container"
+                        hx-swap="innerHTML"
                         hx-confirm="Are you sure you want to delete {{.TicketKey}}?">
                     <i class="fa-solid fa-trash-can text-[11px]"></i>
                 </button>

@@ -1,21 +1,21 @@
 {{define "ticket_form_modal.html"}}
-<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-opacity animate-fadeIn" id="form-modal">
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#090714]/80 backdrop-blur-md transition-opacity animate-fadeIn" id="form-modal">
     <!-- Click backdrop to close -->
     <div class="fixed inset-0" onclick="closeModal()"></div>
 
     <!-- Modal Box -->
-    <div class="relative bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl z-10 overflow-hidden text-slate-200">
+    <div class="relative glass-panel rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl z-10 overflow-hidden text-slate-200 border-violet-500/30">
         
         <!-- Header -->
-        <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <div class="px-6 py-4 border-b border-violet-500/20 flex items-center justify-between bg-[#120d2a]/80">
             <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
                 {{if .Ticket}}
-                    <i class="fa-solid fa-pen-to-square text-indigo-400"></i> Edit Ticket <span class="font-mono text-indigo-400">({{.Ticket.TicketKey}})</span>
+                    <i class="fa-solid fa-pen-to-square text-cyan-400"></i> Edit Ticket <span class="font-mono text-cyan-300">({{.Ticket.TicketKey}})</span>
                 {{else}}
-                    <i class="fa-solid fa-circle-plus text-indigo-400"></i> Create Development Ticket
+                    <i class="fa-solid fa-circle-plus text-cyan-400"></i> Create Development Ticket
                 {{end}}
             </h3>
-            <button class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 flex items-center justify-center transition-colors"
+            <button class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-violet-900/50 flex items-center justify-center transition-colors"
                     onclick="closeModal()">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -28,7 +28,7 @@
               class="p-6 overflow-y-auto space-y-4 flex-1 scrollbar-thin">
 
             {{if not .Ticket}}
-                <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 rounded-xl text-xs flex items-center gap-2">
+                <div class="p-3 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded-xl text-xs flex items-center gap-2 shadow-inner">
                     <i class="fa-solid fa-globe text-cyan-400"></i>
                     <span><strong>Public Submission:</strong> Anyone can submit bug reports or feature requests anonymously without logging in.</span>
                 </div>
@@ -36,23 +36,23 @@
 
             <!-- Title -->
             <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1.5">Ticket Title *</label>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Ticket Title *</label>
                 <input type="text" name="title" required value="{{if .Ticket}}{{.Ticket.Title}}{{end}}" placeholder="e.g. Fix memory leak in auth middleware"
-                       class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none placeholder:text-slate-600">
+                       class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder:text-slate-500">
             </div>
 
             <!-- Description -->
             <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1.5">Detailed Description</label>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Detailed Description</label>
                 <textarea name="description" rows="3" placeholder="Provide background context, steps to reproduce, or acceptance criteria..."
-                          class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none placeholder:text-slate-600 resize-none">{{if .Ticket}}{{.Ticket.Description}}{{end}}</textarea>
+                          class="w-full glass-input rounded-xl p-3.5 text-xs text-slate-100 placeholder:text-slate-500 resize-none">{{if .Ticket}}{{.Ticket.Description}}{{end}}</textarea>
             </div>
 
             <!-- Grid 2 cols: Type & Priority -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Ticket Type</label>
-                    <select name="type" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Ticket Type</label>
+                    <select name="type" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-slate-100 bg-[#0e0a22]">
                         <option value="Feature" {{if .Ticket}}{{if eq .Ticket.Type "Feature"}}selected{{end}}{{end}}>🚀 Feature</option>
                         <option value="Bug" {{if .Ticket}}{{if eq .Ticket.Type "Bug"}}selected{{end}}{{end}}>🐛 Bug</option>
                         <option value="Refactor" {{if .Ticket}}{{if eq .Ticket.Type "Refactor"}}selected{{end}}{{end}}>⚡ Refactor</option>
@@ -62,8 +62,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Priority Level</label>
-                    <select name="priority" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Priority Level</label>
+                    <select name="priority" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-slate-100 bg-[#0e0a22]">
                         <option value="Low" {{if .Ticket}}{{if eq .Ticket.Priority "Low"}}selected{{end}}{{end}}>Low</option>
                         <option value="Medium" {{if .Ticket}}{{if eq .Ticket.Priority "Medium"}}selected{{end}}{{else}}selected{{end}}>Medium</option>
                         <option value="High" {{if .Ticket}}{{if eq .Ticket.Priority "High"}}selected{{end}}{{end}}>High</option>
@@ -75,8 +75,8 @@
             <!-- Grid 2 cols: Status & Component -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Workflow Status</label>
-                    <select name="status" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Workflow Status</label>
+                    <select name="status" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-slate-100 bg-[#0e0a22]">
                         <option value="Backlog" {{if .Ticket}}{{if eq .Ticket.Status "Backlog"}}selected{{end}}{{else}}selected{{end}}>Backlog</option>
                         <option value="In Progress" {{if .Ticket}}{{if eq .Ticket.Status "In Progress"}}selected{{end}}{{end}}>In Progress</option>
                         <option value="In Review" {{if .Ticket}}{{if eq .Ticket.Status "In Review"}}selected{{end}}{{end}}>In Review</option>
@@ -85,8 +85,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1.5">System Component</label>
-                    <select name="component" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">System Component</label>
+                    <select name="component" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-slate-100 bg-[#0e0a22]">
                         <option value="Frontend" {{if .Ticket}}{{if eq .Ticket.Component "Frontend"}}selected{{end}}{{end}}>Frontend</option>
                         <option value="Backend" {{if .Ticket}}{{if eq .Ticket.Component "Backend"}}selected{{end}}{{else}}selected{{end}}>Backend</option>
                         <option value="Database" {{if .Ticket}}{{if eq .Ticket.Component "Database"}}selected{{end}}{{end}}>Database</option>
@@ -99,30 +99,30 @@
             <!-- Grid 3 cols: Assignee, Reporter, Story Points -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Assignee</label>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Assignee</label>
                     <input type="text" name="assignee" value="{{if .Ticket}}{{.Ticket.Assignee}}{{else}}Unassigned{{end}}" placeholder="Unassigned"
-                           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                           class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-slate-100">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Reporter</label>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Reporter</label>
                     <input type="text" name="reporter" value="{{if .Ticket}}{{.Ticket.Reporter}}{{else}}Anonymous User{{end}}" placeholder="Anonymous User"
-                           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                           class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-slate-100">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Story Points</label>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Story Points</label>
                     <input type="number" name="story_points" min="1" max="21" value="{{if .Ticket}}{{.Ticket.StoryPoints}}{{else}}3{{end}}"
-                           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                           class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-slate-100">
                 </div>
             </div>
 
             <!-- Footer Actions -->
-            <div class="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
-                <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl transition-colors">
+            <div class="pt-4 border-t border-violet-500/20 flex items-center justify-end gap-3">
+                <button type="button" onclick="closeModal()" class="px-4 py-2 bg-violet-950/60 hover:bg-violet-900/80 text-slate-300 text-xs font-medium rounded-xl transition-colors border border-violet-700/40">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition-all shadow-lg shadow-indigo-600/20">
+                <button type="submit" class="px-5 py-2 bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white text-xs font-semibold rounded-xl transition-all shadow-lg shadow-violet-600/30">
                     {{if .Ticket}}Save Changes{{else}}Submit Ticket{{end}}
                 </button>
             </div>
