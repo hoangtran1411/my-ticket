@@ -64,6 +64,7 @@ func main() {
 
 	addr := fmt.Sprintf(":%s", port)
 	log.Printf("==================================================")
+	//nolint:gosec // G706: port is validated via strconv.Atoi
 	log.Printf("🚀 DevTicket Pro server starting on http://localhost:%s", port)
 	log.Printf("   Admin credentials: username='admin', password='admin123'")
 	log.Printf("==================================================")

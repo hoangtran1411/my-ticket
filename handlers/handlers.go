@@ -535,6 +535,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//nolint:gosec // G124: HTTP dev cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:     models.JWTTokenCookie,
 		Value:    tokenStr,
@@ -549,6 +550,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) HandleLogout(w http.ResponseWriter, r *http.Request) {
+	//nolint:gosec // G124: HTTP dev cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:     models.JWTTokenCookie,
 		Value:    "",

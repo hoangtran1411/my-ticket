@@ -184,6 +184,7 @@ func TestJWTMiddleware_WithValidToken_SetsContext(t *testing.T) {
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	//nolint:gosec // G124: test cookie
 	req.AddCookie(&http.Cookie{Name: models.JWTTokenCookie, Value: tokenStr})
 	rr := httptest.NewRecorder()
 
