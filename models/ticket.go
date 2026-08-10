@@ -146,6 +146,9 @@ func GetTickets(db *sql.DB, filter TicketFilter) ([]Ticket, error) {
 		t.UpdatedAt = ParseTime(updatedAtStr)
 		tickets = append(tickets, t)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
 	return tickets, nil
 }
@@ -261,6 +264,9 @@ func GetCommentsByTicketID(db *sql.DB, ticketID int64) ([]Comment, error) {
 		}
 		c.CreatedAt = ParseTime(createdAtStr)
 		comments = append(comments, c)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return comments, nil
 }
