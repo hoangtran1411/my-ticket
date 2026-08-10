@@ -45,7 +45,7 @@ func NewHandler(db *sql.DB) *Handler {
 // Middleware: Extract JWT claims and put into request context
 func (h *Handler) JWTMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("jwt_token")
+		cookie, err := r.Cookie(models.JWTTokenCookie)
 		if err == nil && cookie.Value != "" {
 			claims, err := models.ValidateToken(cookie.Value)
 			if err == nil {
@@ -346,7 +346,7 @@ func (h *Handler) HandleUpdateTicket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
+	if err = r.ParseForm(); err != nil {
 		http.Error(w, "Invalid form data", http.StatusBadRequest)
 		return
 	}
@@ -446,7 +446,7 @@ func (h *Handler) HandleAddComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
+	if err = r.ParseForm(); err != nil {
 		http.Error(w, "Invalid form data", http.StatusBadRequest)
 		return
 	}
@@ -536,7 +536,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     "jwt_token",
+		Name:     models.JWTTokenCookie,
 		Value:    tokenStr,
 		Expires:  time.Now().Add(24 * time.Hour),
 		HttpOnly: true,
@@ -550,7 +550,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) HandleLogout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
-		Name:     "jwt_token",
+		Name:     models.JWTTokenCookie,
 		Value:    "",
 		Expires:  time.Unix(0, 0),
 		HttpOnly: true,

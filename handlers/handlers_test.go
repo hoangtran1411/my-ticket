@@ -184,7 +184,7 @@ func TestJWTMiddleware_WithValidToken_SetsContext(t *testing.T) {
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	req.AddCookie(&http.Cookie{Name: "jwt_token", Value: tokenStr})
+	req.AddCookie(&http.Cookie{Name: models.JWTTokenCookie, Value: tokenStr})
 	rr := httptest.NewRecorder()
 
 	h.JWTMiddleware(next).ServeHTTP(rr, req)
@@ -712,7 +712,7 @@ func TestHandleLogin_ValidCredentials(t *testing.T) {
 	cookies := rr.Result().Cookies()
 	found := false
 	for _, c := range cookies {
-		if c.Name == "jwt_token" {
+		if c.Name == models.JWTTokenCookie {
 			found = true
 			break
 		}
@@ -741,7 +741,7 @@ func TestHandleLogin_InvalidCredentials(t *testing.T) {
 	if rr.Code != http.StatusUnauthorized {
 		t.Errorf("status: got %d, want %d", rr.Code, http.StatusUnauthorized)
 	}
-	if strings.Contains(rr.Body.String(), "jwt_token") {
+	if strings.Contains(rr.Body.String(), models.JWTTokenCookie) {
 		t.Error("should not set jwt_token on failed login")
 	}
 }
@@ -779,7 +779,7 @@ func TestHandleLogout_ClearsCookie(t *testing.T) {
 	cookies := rr.Result().Cookies()
 	found := false
 	for _, c := range cookies {
-		if c.Name == "jwt_token" && c.Value == "" {
+		if c.Name == models.JWTTokenCookie && c.Value == "" {
 			found = true
 		}
 	}

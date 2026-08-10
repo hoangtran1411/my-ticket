@@ -58,6 +58,8 @@ func setupTestDB(t *testing.T) *sql.DB {
 	return db
 }
 
+const testAlice = "alice"
+
 // seedTicket inserts a ticket and returns it with its generated ID.
 func seedTicket(t *testing.T, db *sql.DB) *Ticket {
 	t.Helper()
@@ -66,8 +68,8 @@ func seedTicket(t *testing.T, db *sql.DB) *Ticket {
 		Description: "A test description",
 		Type:        "Bug",
 		Priority:    "High",
-		Status:      "Backlog",
-		Assignee:    "alice",
+		Status:      StatusBacklog,
+		Assignee:    testAlice,
 		Reporter:    "bob",
 		Component:   "Backend",
 		StoryPoints: 5,
@@ -82,10 +84,10 @@ func seedTicket(t *testing.T, db *sql.DB) *Ticket {
 
 func TestStatusClass(t *testing.T) {
 	cases := []struct{ status, want string }{
-		{"Backlog", "bg-slate-800/80 text-slate-300 border-slate-700"},
-		{"In Progress", "bg-amber-500/10 text-amber-400 border-amber-500/30"},
-		{"In Review", "bg-indigo-500/10 text-indigo-400 border-indigo-500/30"},
-		{"Done", "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"},
+		{StatusBacklog, "bg-slate-800/80 text-slate-300 border-slate-700"},
+		{StatusInProgress, "bg-amber-500/10 text-amber-400 border-amber-500/30"},
+		{StatusInReview, "bg-indigo-500/10 text-indigo-400 border-indigo-500/30"},
+		{StatusDone, "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"},
 		{"DONE", "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"}, // case-insensitive
 		{"unknown", "bg-slate-800 text-slate-300 border-slate-700"},
 	}
@@ -214,8 +216,8 @@ func TestGetTickets_AllFilters(t *testing.T) {
 
 	tk2 := &Ticket{
 		Title: "Feature X", Description: "desc", Type: "Feature",
-		Priority: "Low", Status: "Done", Assignee: "carol",
-		Reporter: "alice", Component: "Frontend", StoryPoints: 2,
+		Priority: "Low", Status: StatusDone, Assignee: "carol",
+		Reporter: testAlice, Component: "Frontend", StoryPoints: 2,
 	}
 	_ = CreateTicket(db, tk2)
 
@@ -225,7 +227,7 @@ func TestGetTickets_AllFilters(t *testing.T) {
 		want   int
 	}{
 		{"no filter returns all", TicketFilter{}, 2},
-		{"status=Done", TicketFilter{Status: "Done"}, 1},
+		{"status=Done", TicketFilter{Status: StatusDone}, 1},
 		{"status=All skipped", TicketFilter{Status: "All"}, 2},
 		{"priority=High", TicketFilter{Priority: "High"}, 1},
 		{"type=Bug", TicketFilter{Type: "Bug"}, 1},
@@ -280,7 +282,7 @@ func TestUpdateTicket(t *testing.T) {
 
 	tk.Title = "Updated Title"
 	tk.Priority = "Urgent"
-	tk.Status = "In Progress"
+	tk.Status = StatusInProgress
 	tk.StoryPoints = 8
 
 	if err := UpdateTicket(db, tk); err != nil {
@@ -294,7 +296,7 @@ func TestUpdateTicket(t *testing.T) {
 	if got.Title != "Updated Title" {
 		t.Errorf("title not updated: got %q", got.Title)
 	}
-	if got.Status != "In Progress" {
+	if got.Status != StatusInProgress {
 		t.Errorf("status not updated: got %q", got.Status)
 	}
 	if got.StoryPoints != 8 {
@@ -306,14 +308,14 @@ func TestUpdateTicketStatus(t *testing.T) {
 	db := setupTestDB(t)
 	tk := seedTicket(t, db)
 
-	if err := UpdateTicketStatus(db, tk.ID, "Done"); err != nil {
+	if err := UpdateTicketStatus(db, tk.ID, StatusDone); err != nil {
 		t.Fatalf("UpdateTicketStatus: %v", err)
 	}
 	got, err := GetTicketByID(db, tk.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Status != "Done" {
+	if got.Status != StatusDone {
 		t.Errorf("status not updated: got %q", got.Status)
 	}
 }
@@ -343,7 +345,7 @@ func TestDeleteTicket_RemovesTicketAndComments(t *testing.T) {
 func TestGetStats(t *testing.T) {
 	db := setupTestDB(t)
 
-	for _, status := range []string{"Backlog", "In Progress", "In Review", "Done", "Done"} {
+	for _, status := range []string{StatusBacklog, StatusInProgress, StatusInReview, StatusDone, StatusDone} {
 		_ = CreateTicket(db, &Ticket{
 			Title: "t", Description: "d", Type: "Task", Priority: "Low",
 			Status: status, Assignee: "a", Reporter: "r", Component: "Backend",
@@ -352,7 +354,7 @@ func TestGetStats(t *testing.T) {
 	// urgent, not Done
 	_ = CreateTicket(db, &Ticket{
 		Title: "u", Description: "d", Type: "Bug", Priority: "Urgent",
-		Status: "In Progress", Assignee: "a", Reporter: "r", Component: "Backend",
+		Status: StatusInProgress, Assignee: "a", Reporter: "r", Component: "Backend",
 	})
 
 	stats, err := GetStats(db)
@@ -418,7 +420,7 @@ func TestGetCommentsByTicketID(t *testing.T) {
 	db := setupTestDB(t)
 	tk := seedTicket(t, db)
 
-	_ = AddComment(db, &Comment{TicketID: tk.ID, Author: "alice", Content: "first"})
+	_ = AddComment(db, &Comment{TicketID: tk.ID, Author: testAlice, Content: "first"})
 	_ = AddComment(db, &Comment{TicketID: tk.ID, Author: "bob", Content: "second"})
 
 	comments, err := GetCommentsByTicketID(db, tk.ID)

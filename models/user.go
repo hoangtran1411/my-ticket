@@ -18,6 +18,7 @@ type contextKey string
 
 const AdminRole = "admin"
 const UserContextKey contextKey = "user_claims"
+const JWTTokenCookie = "jwt_token"
 
 type User struct {
 	ID           int64     `json:"id"`
@@ -83,7 +84,7 @@ func GetUserFromContext(ctx context.Context) *JWTClaims {
 }
 
 func IsAdminFromRequest(r *http.Request) bool {
-	cookie, err := r.Cookie("jwt_token")
+	cookie, err := r.Cookie(JWTTokenCookie)
 	if err != nil {
 		return false
 	}

@@ -17,7 +17,7 @@ func InitDB(filepath string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to open sqlite database: %w", err)
 	}
 
-	if err := database.Ping(); err != nil {
+	if err = database.Ping(); err != nil {
 		return nil, fmt.Errorf("failed to ping sqlite database: %w", err)
 	}
 
@@ -53,7 +53,7 @@ func InitDB(filepath string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to create tables: %w", err)
 	}
 
-	if err := models.CreateUserTable(database); err != nil {
+	if err = models.CreateUserTable(database); err != nil {
 		return nil, fmt.Errorf("failed to create users table: %w", err)
 	}
 

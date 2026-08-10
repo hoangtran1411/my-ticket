@@ -94,15 +94,15 @@ func TestGenerateToken_UserRole(t *testing.T) {
 // ─── Context helpers ──────────────────────────────────────────────────────────
 
 func TestGetUserFromContext_WithClaims(t *testing.T) {
-	expected := &JWTClaims{Username: "alice", Role: "admin"}
+	expected := &JWTClaims{Username: testAlice, Role: "admin"}
 	ctx := context.WithValue(context.Background(), UserContextKey, expected)
 
 	got := GetUserFromContext(ctx)
 	if got == nil {
 		t.Fatal("expected claims, got nil")
 	}
-	if got.Username != "alice" {
-		t.Errorf("Username: got %q, want %q", got.Username, "alice")
+	if got.Username != testAlice {
+		t.Errorf("Username: got %q, want %q", got.Username, testAlice)
 	}
 }
 

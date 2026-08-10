@@ -7,6 +7,13 @@ import (
 	"time"
 )
 
+const (
+	StatusBacklog    = "Backlog"
+	StatusInProgress = "In Progress"
+	StatusInReview   = "In Review"
+	StatusDone       = "Done"
+)
+
 type Ticket struct {
 	ID          int64     `json:"id"`
 	TicketKey   string    `json:"ticket_key"`
