@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 
 	"my-ticket/db"
 	"my-ticket/handlers"
@@ -56,7 +58,7 @@ func main() {
 	handlerWithJWT := h.JWTMiddleware(mux)
 
 	port := os.Getenv("PORT")
-	if port == "" {
+	if _, err := strconv.Atoi(port); err != nil {
 		port = "8080"
 	}
 
@@ -66,7 +68,13 @@ func main() {
 	log.Printf("   Admin credentials: username='admin', password='admin123'")
 	log.Printf("==================================================")
 
-	if err := http.ListenAndServe(addr, handlerWithJWT); err != nil {
+	server := &http.Server{
+		Addr:              addr,
+		Handler:           handlerWithJWT,
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("Server stopped with error: %v", err)
 	}
 }

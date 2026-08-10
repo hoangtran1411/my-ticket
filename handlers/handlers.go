@@ -555,6 +555,7 @@ func (h *Handler) HandleLogout(w http.ResponseWriter, r *http.Request) {
 		Expires:  time.Unix(0, 0),
 		HttpOnly: true,
 		Path:     "/",
+		SameSite: http.SameSiteLaxMode,
 	})
 
 	w.Header().Set("HX-Refresh", "true")

@@ -7,6 +7,7 @@ run:
 
 
 linters:
+  disable-all: true
   enable:
     - errcheck
     - govet
@@ -18,6 +19,8 @@ linters:
     - misspell
     - bodyclose
     - copyloopvar
+    - gosec
+    - revive
   settings:
     govet:
       enable:
@@ -30,7 +33,26 @@ linters:
       min-occurrences: 5
     misspell:
       locale: US
+    revive:
+      rules:
+        - name: exported
+          disabled: true
+        - name: package-comments
+          disabled: true
+        - name: unused-parameter
+          disabled: true
+    gosec:
+      excludes:
+        - G124
+        - G706
 
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gosec
+    - linters:
+        - gosec
+      text: "G124:"
