@@ -7,20 +7,8 @@ run:
 
 output:
   formats:
-    colored-line-number: stdout
-
-linters-settings:
-  govet:
-    enable:
-      - shadow
-      - nilness
-  gocyclo:
-    min-complexity: 15
-  goconst:
-    min-len: 3
-    min-occurrences: 5
-  misspell:
-    locale: US
+    - format: colored-line-number
+      path: stdout
 
 linters:
   enable:
@@ -34,13 +22,27 @@ linters:
     - misspell
     - bodyclose
     - copyloopvar
+  settings:
+    govet:
+      enable:
+        - shadow
+        - nilness
+    gocyclo:
+      min-complexity: 15
+    goconst:
+      min-len: 3
+      min-occurrences: 5
+    misspell:
+      locale: US
 
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-  exclude-rules:
-    - path: ".*_test\\.go"
-      linters:
-        - goconst
-        - errcheck
-        - gocyclo
+  exclude:
+    rules:
+      - path: ".*_test\\.go"
+        linters:
+          - goconst
+          - errcheck
+          - gocyclo
+
