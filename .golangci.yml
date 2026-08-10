@@ -7,7 +7,7 @@ run:
 
 output:
   formats:
-    colored-line-number: stdout
+    colored-tab: stdout
 
 linters:
   enable:
@@ -37,11 +37,3 @@ linters:
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-  exclude:
-    rules:
-      - path: ".*_test\\.go"
-        linters:
-          - goconst
-          - errcheck
-          - gocyclo
-
