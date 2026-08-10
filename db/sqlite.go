@@ -205,12 +205,12 @@ func seedDatabase(db *sql.DB) {
 		ticketID, err := res.LastInsertId()
 		if err == nil {
 			// Seed sample comments
-			db.Exec(
+			_, _ = db.Exec(
 				`INSERT INTO comments (ticket_id, author, content, created_at) VALUES (?, ?, ?, ?)`,
 				ticketID, t.reporter, fmt.Sprintf("Initial bug report logged for %s. Assigned to %s.", t.key, t.assignee), createdAt,
 			)
 			if t.status == "In Progress" || t.status == "In Review" {
-				db.Exec(
+				_, _ = db.Exec(
 					`INSERT INTO comments (ticket_id, author, content, created_at) VALUES (?, ?, ?, ?)`,
 					ticketID, t.assignee, "Working on reproducing and fixing this issue. Patch submitted for review.", now.Format("2006-01-02 15:04:05"),
 				)

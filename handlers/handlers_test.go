@@ -24,7 +24,7 @@ func newTestHandler(t *testing.T) *Handler {
 	if err != nil {
 		t.Fatalf("InitDB: %v", err)
 	}
-	t.Cleanup(func() { database.Close() })
+	t.Cleanup(func() { _ = database.Close() })
 
 	funcMap := template.FuncMap{
 		"statusClass":   models.StatusClass,
@@ -41,22 +41,15 @@ func newTestHandler(t *testing.T) *Handler {
 	return &Handler{DB: database, Templates: tmpl}
 }
 
+const testAdminName = "admin"
+
 // adminCtx returns a context populated with admin JWT claims.
 func adminCtx(r *http.Request) *http.Request {
-	claims := &models.JWTClaims{Username: "admin", Role: "admin"}
+	claims := &models.JWTClaims{Username: testAdminName, Role: testAdminName}
 	ctx := context.WithValue(r.Context(), models.UserContextKey, claims)
 	return r.WithContext(ctx)
 }
 
-// firstTicketID returns the ID of the first ticket in the seeded test database.
-func firstTicketID(t *testing.T, h *Handler) string {
-	t.Helper()
-	tickets, err := models.GetTickets(h.DB, models.TicketFilter{})
-	if err != nil || len(tickets) == 0 {
-		t.Fatalf("firstTicketID: no tickets in DB: %v", err)
-	}
-	return strings.TrimSpace(strings.Split(tickets[0].TicketKey, "-")[1])
-}
 
 func firstTicketNumID(t *testing.T, h *Handler) int64 {
 	t.Helper()
@@ -182,7 +175,7 @@ func TestRequireAdmin_UserRole_Returns401(t *testing.T) {
 
 func TestJWTMiddleware_WithValidToken_SetsContext(t *testing.T) {
 	h := newTestHandler(t)
-	tokenStr, _ := models.GenerateToken("admin", "admin")
+	tokenStr, _ := models.GenerateToken(testAdminName, testAdminName)
 
 	var gotClaims *models.JWTClaims
 	next := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -199,8 +192,8 @@ func TestJWTMiddleware_WithValidToken_SetsContext(t *testing.T) {
 	if gotClaims == nil {
 		t.Fatal("expected claims in context, got nil")
 	}
-	if gotClaims.Username != "admin" {
-		t.Errorf("Username: got %q, want %q", gotClaims.Username, "admin")
+	if gotClaims.Username != testAdminName {
+		t.Errorf("Username: got %q, want %q", gotClaims.Username, testAdminName)
 	}
 }
 

@@ -66,7 +66,24 @@ func (c Comment) FormattedTime() string {
 	return c.CreatedAt.Format("Jan 02, 15:04")
 }
 
-// Database helper functions
+func ParseTime(str string) time.Time {
+	layouts := []string{
+		"2006-01-02 15:04:05",
+		time.RFC3339,
+		"2006-01-02T15:04:05",
+		"2006-01-02 15:04:05-07:00",
+		"2006-01-02 15:04:05.999999999-07:00",
+		"2006-01-02",
+	}
+	for _, l := range layouts {
+		if t, err := time.Parse(l, str); err == nil {
+			return t
+		}
+	}
+	return time.Time{}
+}
+
+const filterAll = "All"
 
 func GetTickets(db *sql.DB, filter TicketFilter) ([]Ticket, error) {
 	query := `SELECT id, ticket_key, title, description, type, priority, status, assignee, reporter, component, story_points, created_at, updated_at FROM tickets WHERE 1=1`
@@ -78,22 +95,22 @@ func GetTickets(db *sql.DB, filter TicketFilter) ([]Ticket, error) {
 		args = append(args, likeQuery, likeQuery, likeQuery, likeQuery)
 	}
 
-	if filter.Status != "" && filter.Status != "All" {
+	if filter.Status != "" && filter.Status != filterAll {
 		query += ` AND status = ?`
 		args = append(args, filter.Status)
 	}
 
-	if filter.Priority != "" && filter.Priority != "All" {
+	if filter.Priority != "" && filter.Priority != filterAll {
 		query += ` AND priority = ?`
 		args = append(args, filter.Priority)
 	}
 
-	if filter.Type != "" && filter.Type != "All" {
+	if filter.Type != "" && filter.Type != filterAll {
 		query += ` AND type = ?`
 		args = append(args, filter.Type)
 	}
 
-	if filter.Component != "" && filter.Component != "All" {
+	if filter.Component != "" && filter.Component != filterAll {
 		query += ` AND component = ?`
 		args = append(args, filter.Component)
 	}
@@ -104,7 +121,7 @@ func GetTickets(db *sql.DB, filter TicketFilter) ([]Ticket, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var tickets []Ticket
 	for rows.Next() {
@@ -118,8 +135,8 @@ func GetTickets(db *sql.DB, filter TicketFilter) ([]Ticket, error) {
 		if err != nil {
 			return nil, err
 		}
-		t.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAtStr)
-		t.UpdatedAt, _ = time.Parse("2006-01-02 15:04:05", updatedAtStr)
+		t.CreatedAt = ParseTime(createdAtStr)
+		t.UpdatedAt = ParseTime(updatedAtStr)
 		tickets = append(tickets, t)
 	}
 
@@ -140,8 +157,8 @@ func GetTicketByID(db *sql.DB, id int64) (*Ticket, error) {
 	if err != nil {
 		return nil, err
 	}
-	t.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAtStr)
-	t.UpdatedAt, _ = time.Parse("2006-01-02 15:04:05", updatedAtStr)
+	t.CreatedAt = ParseTime(createdAtStr)
+	t.UpdatedAt = ParseTime(updatedAtStr)
 
 	comments, err := GetCommentsByTicketID(db, id)
 	if err == nil {
@@ -226,7 +243,7 @@ func GetCommentsByTicketID(db *sql.DB, ticketID int64) ([]Comment, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var comments []Comment
 	for rows.Next() {
@@ -235,7 +252,7 @@ func GetCommentsByTicketID(db *sql.DB, ticketID int64) ([]Comment, error) {
 		if err := rows.Scan(&c.ID, &c.TicketID, &c.Author, &c.Content, &createdAtStr); err != nil {
 			return nil, err
 		}
-		c.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAtStr)
+		c.CreatedAt = ParseTime(createdAtStr)
 		comments = append(comments, c)
 	}
 	return comments, nil

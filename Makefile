@@ -3,7 +3,7 @@
 APP_NAME=devticket.exe
 DB_FILE=tickets.db
 
-.PHONY: all build run dev clean test fmt help reset-db
+.PHONY: all build run dev clean test lint fmt help reset-db
 
 all: build
 
@@ -13,6 +13,7 @@ help:
 	@echo "  make run        - Run application directly (go run main.go)"
 	@echo "  make build      - Build binary executable ($(APP_NAME))"
 	@echo "  make test       - Run unit tests across all packages"
+	@echo "  make lint       - Run golangci-lint code quality checks"
 	@echo "  make fmt        - Format Go source code (go fmt)"
 	@echo "  make clean      - Remove built binaries"
 	@echo "  make reset-db   - Remove SQLite database to re-seed sample data on next start"
@@ -33,6 +34,10 @@ build:
 ## test: Run tests
 test:
 	go test -v ./...
+
+## lint: Run code quality linter
+lint:
+	golangci-lint run ./...
 
 ## fmt: Format all Go files
 fmt:

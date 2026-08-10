@@ -54,7 +54,7 @@ func setupTestDB(t *testing.T) *sql.DB {
 	if err != nil {
 		t.Fatalf("create schema: %v", err)
 	}
-	t.Cleanup(func() { db.Close() })
+	t.Cleanup(func() { _ = db.Close() })
 	return db
 }
 
@@ -118,8 +118,8 @@ func TestTypeIcon(t *testing.T) {
 		{"Feature", "fa-rocket text-indigo-400"},
 		{"Refactor", "fa-code-branch text-amber-400"},
 		{"Security", "fa-shield-halved text-purple-400"},
-		{"Task", "fa-check-square text-cyan-400"},
-		{"unknown", "fa-check-square text-cyan-400"}, // default
+		{"Task", "fa-list-check text-cyan-400"},
+		{"unknown", "fa-list-check text-cyan-400"}, // default
 	}
 	for _, c := range cases {
 		if got := TypeIcon(c.typ); got != c.want {

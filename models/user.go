@@ -16,6 +16,7 @@ var JWTSecretKey = []byte("super-secret-devticket-jwt-key-2026")
 
 type contextKey string
 
+const AdminRole = "admin"
 const UserContextKey contextKey = "user_claims"
 
 type User struct {
@@ -111,9 +112,11 @@ func CreateUserTable(db *sql.DB) error {
 	var count int
 	err = db.QueryRow("SELECT COUNT(*) FROM users WHERE username = 'admin'").Scan(&count)
 	if err == nil && count == 0 {
-		hashed, _ := HashPassword("admin123")
-		nowStr := time.Now().Format("2006-01-02 15:04:05")
-		_, _ = db.Exec("INSERT INTO users (username, password_hash, role, created_at) VALUES (?, ?, ?, ?)", "admin", hashed, "admin", nowStr)
+		hashed, err := HashPassword("admin123")
+		if err == nil {
+			nowStr := time.Now().Format("2006-01-02 15:04:05")
+			_, _ = db.Exec("INSERT INTO users (username, password_hash, role, created_at) VALUES (?, ?, ?, ?)", "admin", hashed, "admin", nowStr)
+		}
 	}
 
 	return nil
@@ -132,6 +135,6 @@ func AuthenticateUser(db *sql.DB, username, password string) (*User, error) {
 		return nil, errors.New("invalid username or password")
 	}
 
-	user.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAtStr)
+	user.CreatedAt = ParseTime(createdAtStr)
 	return &user, nil
 }

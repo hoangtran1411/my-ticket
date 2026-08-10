@@ -36,8 +36,10 @@ func TestHashPassword_DifferentEachCall(t *testing.T) {
 
 // ─── JWT helpers ──────────────────────────────────────────────────────────────
 
+const testAdminUser = "admin"
+
 func TestGenerateAndValidateToken(t *testing.T) {
-	tokenStr, err := GenerateToken("admin", "admin")
+	tokenStr, err := GenerateToken(testAdminUser, testAdminUser)
 	if err != nil {
 		t.Fatalf("GenerateToken: %v", err)
 	}
@@ -49,11 +51,11 @@ func TestGenerateAndValidateToken(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ValidateToken: %v", err)
 	}
-	if claims.Username != "admin" {
-		t.Errorf("Username: got %q, want %q", claims.Username, "admin")
+	if claims.Username != testAdminUser {
+		t.Errorf("Username: got %q, want %q", claims.Username, testAdminUser)
 	}
-	if claims.Role != "admin" {
-		t.Errorf("Role: got %q, want %q", claims.Role, "admin")
+	if claims.Role != testAdminUser {
+		t.Errorf("Role: got %q, want %q", claims.Role, testAdminUser)
 	}
 	if claims.Issuer != "DevTicket" {
 		t.Errorf("Issuer: got %q, want %q", claims.Issuer, "DevTicket")
@@ -131,7 +133,7 @@ func TestCreateUserTable_AndSeedAdmin(t *testing.T) {
 	}
 
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM users WHERE username='admin'").Scan(&count)
+	_ = db.QueryRow("SELECT COUNT(*) FROM users WHERE username='admin'").Scan(&count)
 	if count != 1 {
 		t.Errorf("expected 1 admin user, got %d", count)
 	}
@@ -148,7 +150,7 @@ func TestCreateUserTable_Idempotent(t *testing.T) {
 	}
 
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM users WHERE username='admin'").Scan(&count)
+	_ = db.QueryRow("SELECT COUNT(*) FROM users WHERE username='admin'").Scan(&count)
 	if count != 1 {
 		t.Errorf("expected exactly 1 admin after two calls, got %d", count)
 	}
@@ -160,15 +162,15 @@ func TestAuthenticateUser_Success(t *testing.T) {
 		t.Fatalf("CreateUserTable: %v", err)
 	}
 
-	user, err := AuthenticateUser(db, "admin", "admin123")
+	user, err := AuthenticateUser(db, testAdminUser, "admin123")
 	if err != nil {
 		t.Fatalf("AuthenticateUser with valid creds: %v", err)
 	}
-	if user.Username != "admin" {
-		t.Errorf("Username: got %q, want %q", user.Username, "admin")
+	if user.Username != testAdminUser {
+		t.Errorf("Username: got %q, want %q", user.Username, testAdminUser)
 	}
-	if user.Role != "admin" {
-		t.Errorf("Role: got %q, want %q", user.Role, "admin")
+	if user.Role != testAdminUser {
+		t.Errorf("Role: got %q, want %q", user.Role, testAdminUser)
 	}
 	if user.CreatedAt.IsZero() {
 		t.Error("expected non-zero CreatedAt")

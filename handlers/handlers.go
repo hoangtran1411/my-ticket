@@ -61,10 +61,10 @@ func (h *Handler) JWTMiddleware(next http.Handler) http.Handler {
 func (h *Handler) RequireAdmin(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims := models.GetUserFromContext(r.Context())
-		if claims == nil || claims.Role != "admin" {
+		if claims == nil || claims.Role != models.AdminRole {
 			w.Header().Set("HX-Trigger", "unauthorized")
 			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte(`
+			_, _ = w.Write([]byte(`
 				<div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#1e0a16]/95 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-2xl shadow-2xl backdrop-blur-xl transition-all animate-fadeIn" id="toast">
 					<i class="fa-solid fa-lock text-rose-400 text-lg"></i>
 					<div>
@@ -127,7 +127,7 @@ func (h *Handler) HandleIndex(w http.ResponseWriter, r *http.Request) {
 		Filter:     filter,
 		KanbanCols: groupTicketsByStatus(tickets),
 		User:       userClaims,
-		IsAdmin:    userClaims != nil && userClaims.Role == "admin",
+		IsAdmin:    userClaims != nil && userClaims.Role == models.AdminRole,
 	}
 
 	err = h.Templates.ExecuteTemplate(w, "layout.html", data)
@@ -168,7 +168,7 @@ func (h *Handler) HandleTickets(w http.ResponseWriter, r *http.Request) {
 		Tickets:    tickets,
 		Filter:     filter,
 		KanbanCols: groupTicketsByStatus(tickets),
-		IsAdmin:    userClaims != nil && userClaims.Role == "admin",
+		IsAdmin:    userClaims != nil && userClaims.Role == models.AdminRole,
 	}
 
 	templateName := "kanban_board.html"
@@ -204,7 +204,7 @@ func (h *Handler) HandleTicketDetail(w http.ResponseWriter, r *http.Request) {
 		IsAdmin bool
 	}{
 		Ticket:  ticket,
-		IsAdmin: userClaims != nil && userClaims.Role == "admin",
+		IsAdmin: userClaims != nil && userClaims.Role == models.AdminRole,
 	}
 
 	err = h.Templates.ExecuteTemplate(w, "ticket_detail_modal.html", data)
@@ -221,7 +221,7 @@ func (h *Handler) HandleNewTicketForm(w http.ResponseWriter, r *http.Request) {
 		IsAdmin bool
 	}{
 		Ticket:  nil,
-		IsAdmin: userClaims != nil && userClaims.Role == "admin",
+		IsAdmin: userClaims != nil && userClaims.Role == models.AdminRole,
 	}
 
 	err := h.Templates.ExecuteTemplate(w, "ticket_form_modal.html", data)
@@ -252,7 +252,7 @@ func (h *Handler) HandleEditTicketForm(w http.ResponseWriter, r *http.Request) {
 		IsAdmin bool
 	}{
 		Ticket:  ticket,
-		IsAdmin: userClaims != nil && userClaims.Role == "admin",
+		IsAdmin: userClaims != nil && userClaims.Role == models.AdminRole,
 	}
 
 	err = h.Templates.ExecuteTemplate(w, "ticket_form_modal.html", data)
@@ -327,7 +327,7 @@ func (h *Handler) HandleCreateTicket(w http.ResponseWriter, r *http.Request) {
 		reporterBadge = userClaims.Username
 	}
 
-	w.Write([]byte(`
+	_, _ = w.Write([]byte(`
 		<div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md transition-all animate-bounce" id="toast">
 			<i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
 			<div>
@@ -377,7 +377,7 @@ func (h *Handler) HandleUpdateTicket(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("HX-Trigger", "refresh-board, close-modal")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`
+	_, _ = w.Write([]byte(`
 		<div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-indigo-950/90 border border-indigo-500/50 text-indigo-300 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md transition-all animate-bounce" id="toast">
 			<i class="fa-solid fa-pen-to-square text-indigo-400 text-lg"></i>
 			<div>
@@ -425,7 +425,7 @@ func (h *Handler) HandleDeleteTicket(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("HX-Trigger", "refresh-board, refresh-stats, close-modal")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`
+	_, _ = w.Write([]byte(`
 		<div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#1e0a16]/95 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-2xl shadow-2xl backdrop-blur-xl transition-all animate-fadeIn" id="toast">
 			<i class="fa-solid fa-trash-can text-rose-400 text-lg"></i>
 			<div>
@@ -520,7 +520,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	user, err := models.AuthenticateUser(h.DB, username, password)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte(`
+		_, _ = w.Write([]byte(`
 			<div class="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-xl text-xs flex items-center gap-2" id="login-error">
 				<i class="fa-solid fa-circle-exclamation"></i>
 				<span>Invalid username or password. Try <strong>admin</strong> / <strong>admin123</strong></span>

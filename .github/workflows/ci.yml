@@ -1,0 +1,46 @@
+name: DevTicket Pro CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint:
+    name: Golang Code Quality & Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+
+      - name: Run golangci-lint
+        uses: golangci-lint/golangci-lint-action@v6
+        with:
+          version: v1.64.5
+          args: --timeout=5m
+
+  test:
+    name: Build & Run Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+
+      - name: Run Unit & Integration Tests
+        run: go test -v -race -coverprofile=coverage.txt ./...
+
+      - name: Verify Go Build
+        run: go build -v ./...
