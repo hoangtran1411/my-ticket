@@ -5,9 +5,6 @@ run:
   issues-exit-code: 1
   tests: true
 
-output:
-  formats:
-    colored-tab: stdout
 
 linters:
   enable:
