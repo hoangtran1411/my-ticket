@@ -29,8 +29,8 @@ func InitDB(filepath string) (*sql.DB, error) {
 		"PRAGMA busy_timeout = 5000;",
 	}
 	for _, pragma := range pragmas {
-		if _, err := database.Exec(pragma); err != nil {
-			log.Printf("Warning: failed to execute pragma %q: %v", pragma, err)
+		if _, pErr := database.Exec(pragma); pErr != nil {
+			log.Printf("Warning: failed to execute pragma %q: %v", pragma, pErr)
 		}
 	}
 
