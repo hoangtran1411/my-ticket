@@ -54,8 +54,8 @@ func main() {
 	mux.HandleFunc("POST /tickets/{id}/status", h.RequireAdmin(h.HandleUpdateStatus))
 	mux.HandleFunc("DELETE /tickets/{id}", h.RequireAdmin(h.HandleDeleteTicket))
 
-	// Wrap entire mux with JWTMiddleware to populate user context
-	handlerWithJWT := h.JWTMiddleware(mux)
+	// Wrap entire mux with SecurityHeadersMiddleware and JWTMiddleware to populate user context
+	handlerStack := h.SecurityHeadersMiddleware(h.JWTMiddleware(mux))
 
 	port := os.Getenv("PORT")
 	if _, err := strconv.Atoi(port); err != nil {
@@ -71,7 +71,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:              addr,
-		Handler:           handlerWithJWT,
+		Handler:           handlerStack,
 		ReadHeaderTimeout: 3 * time.Second,
 	}
 

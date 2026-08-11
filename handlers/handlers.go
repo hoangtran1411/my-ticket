@@ -42,6 +42,17 @@ func NewHandler(db *sql.DB) *Handler {
 	}
 }
 
+// Middleware: Set HTTP Security Headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, CSP)
+func (h *Handler) SecurityHeadersMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-XSS-Protection", "1; mode=block")
+		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		next.ServeHTTP(w, r)
+	})
+}
+
 // Middleware: Extract JWT claims and put into request context
 func (h *Handler) JWTMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -1,0 +1,16 @@
+services:
+  devticket:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: devticket-pro
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+    volumes:
+      - devticket-data:/app/tickets.db
+    restart: unless-stopped
+
+volumes:
+  devticket-data:
